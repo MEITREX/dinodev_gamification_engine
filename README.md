@@ -6,6 +6,7 @@ See also the [DinoDev Wiki](https://github.com/MEITREX/dinodev/wiki/).
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MEITREX_gamification_engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MEITREX_gamification_engine)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=MEITREX_gamification_engine&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=MEITREX_gamification_engine)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=MEITREX_gamification_engine&metric=coverage)](https://sonarcloud.io/summary/new_code?id=MEITREX_gamification_engine)
 
 ## Concept
 
