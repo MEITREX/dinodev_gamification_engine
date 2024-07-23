@@ -11,6 +11,9 @@ import reactor.core.publisher.Sinks;
  * A class for publishing events and managing an event stream. This class allows for the publishing of events and
  * provides a Flux stream of events for subscribers. It ensures that events are persisted and handles the case where
  * there are no subscribers or an error occurs in the event stream.
+ * <p>
+ * In contrast to similar pub-sub classes, the {@link #publishEvent(Object)} method can be called multiple times with
+ * the same event request. If the event already exists, the subscribers will not be notified again.
  *
  * @param <E> the event type
  * @param <R> the event request type

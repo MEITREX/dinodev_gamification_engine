@@ -4,6 +4,12 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.*;
 
+/**
+ * A registry for data objects that can be identified by a unique identifier.
+ *
+ * @param <T> the type of the data objects
+ * @param <I> the type of the unique identifier
+ */
 @RequiredArgsConstructor
 public abstract class DataRegistry<T, I> {
 

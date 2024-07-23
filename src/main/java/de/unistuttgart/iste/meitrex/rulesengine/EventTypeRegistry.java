@@ -5,6 +5,9 @@ import de.unistuttgart.iste.meitrex.rulesengine.util.DataRegistry;
 
 import java.util.*;
 
+/**
+ * Registry for event types. Automatically contains the {@link DefaultEventTypes}.
+ */
 public class EventTypeRegistry extends DataRegistry<EventType, String> {
 
     public EventTypeRegistry() {

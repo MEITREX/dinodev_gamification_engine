@@ -56,7 +56,7 @@ class GamificationEngineTest {
     void testCorrectRuleActionsExecuted() {
         CreateEventInput event = CreateEventInput.builder()
                 .setEventTypeIdentifier(DefaultEventTypes.SYSTEM_MESSAGE.getIdentifier())
-                .setEventData(List.of(new TemplateFieldInput("message", AllowedDataType.STRING, "Test System Message")))
+                .setEventData(List.of(new DataFieldInput("message", AllowedDataType.STRING, "Test System Message")))
                 .build();
 
         var stepVerifier = StepVerifier.create(eventPublisher.getEventStream());

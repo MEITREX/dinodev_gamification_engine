@@ -4,6 +4,9 @@ import de.unistuttgart.iste.meitrex.rulesengine.util.DataRegistry;
 
 import java.util.*;
 
+/**
+ * Registry for {@link Rule}s.
+ */
 public class RuleRegistry extends DataRegistry<Rule, UUID> {
 
     public RuleRegistry() {

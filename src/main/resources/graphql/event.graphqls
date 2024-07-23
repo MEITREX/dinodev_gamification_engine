@@ -1,6 +1,6 @@
 enum EventVisibility {
     """
-    Only for admins. Not visible to users.
+    Internal events. Not visible to users. May be shown to administrators.
     """
     INTERNAL
     """
@@ -17,21 +17,64 @@ enum EventVisibility {
     PUBLIC
 }
 
+"""
+Represents an event in the system.
+"""
 interface Event {
+    """
+    Unique identifier of the event.
+    """
     id: UUID!
+    """
+    Type of the event.
+    """
     eventType: EventType!
+    """
+    Visibility of the event.
+    """
     visibility: EventVisibility!
+    """
+    Id of the user who triggered the event.
+    """
     userId: UUID
+    """
+    List of user ids who can see the event (in addition to the user who triggered the event).
+    """
     visibleToUserIds: [UUID!]!
+    """
+    Id of the project the event belongs to.
+    """
     projectId: UUID
+    """
+    Timestamp of the event.
+    """
     timestamp: DateTime!
+    """
+    Message of the event.
+    """
     message: String!
+    """
+    Timestamp of the most recent child event.
+    """
     mostRecentChildTimestamp: DateTime!
+    """
+    Parent event, if any.
+    """
     parent: Event
-    eventData: [TemplateField!]!
+    """
+    Data of the event.
+    """
+    eventData: [DataField!]!
+    """
+    List of child events.
+    """
     children: [Event!]! @OnDemand
 }
 
+"""
+Implementation of the Event interface.
+Fields are described in the interface definition.
+"""
 type DefaultEvent implements Event {
     id: UUID!
     eventType: DefaultEventType!
@@ -43,31 +86,64 @@ type DefaultEvent implements Event {
     message: String!
     mostRecentChildTimestamp: DateTime!
     parent: DefaultEvent
-    eventData: [DefaultTemplateField!]!
+    eventData: [DefaultDataField!]!
     children: [DefaultEvent!]! @OnDemand
 }
 
+"""
+Input for creating an event.
+Fields are described in the Event interface.
+"""
 input CreateEventInput {
     id: UUID
     eventTypeIdentifier: String!
+    """
+    Visibility of the event. If not provided, the default visibility of the event type is used.
+    """
     visibility: EventVisibility
     timestamp: DateTime!
+    """
+    Message of the event. If not provided, the message template of the event type is used and
+    the eventData is used to fill in the template.
+    """
     message: String
     userId: UUID
     projectId: UUID
-    eventData: [TemplateFieldInput!]!
+    eventData: [DataFieldInput!]!
     parentId: UUID
     visibleToUserIds: [UUID!] = []
 }
 
+"""
+Represents a type of event in the system.
+"""
 interface EventType {
+    """
+    Unique, human readable identifier of the event type.
+    """
     identifier: String!
+    """
+    Description of the event type.
+    """
     description: String
+    """
+    Default of the event type.
+    """
     defaultVisibility: EventVisibility!
+    """
+    Describes the schema of the event data.
+    """
     eventSchema: SchemaDefinition!
+    """
+    String template for the message of the event.
+    """
     messageTemplate: String!
 }
 
+"""
+Implementation of the EventType interface.
+Fields are described in the interface definition.
+"""
 type DefaultEventType implements EventType {
     identifier: String!
     description: String
@@ -76,40 +152,88 @@ type DefaultEventType implements EventType {
     messageTemplate: String!
 }
 
-interface TemplateField {
+"""
+Represents a field in the data of an event.
+"""
+interface DataField {
+    """
+    Name of the field.
+    """
+    key: String!
+    """
+    Type of the field.
+    """
+    type: AllowedDataType!
+    """
+    Value of the field, as a string.
+    """
+    value: String
+}
+
+"""
+Default implementation of the DataField interface.
+"""
+type DefaultDataField implements DataField {
     key: String!
     type: AllowedDataType!
     value: String
 }
 
-type DefaultTemplateField implements TemplateField {
+"""
+Input for creating a data field.
+"""
+input DataFieldInput {
     key: String!
     type: AllowedDataType!
     value: String
 }
 
-input TemplateFieldInput {
-    key: String!
-    type: AllowedDataType!
-    value: String
-}
-
+"""
+Definition of the schema of the event data.
+"""
 interface SchemaDefinition {
+    """
+    List of fields in the schema.
+    """
     fields: [FieldSchemaDefinition!]!
 }
 
+"""
+Default implementation of the SchemaDefinition interface.
+"""
 type DefaultSchemaDefinition implements SchemaDefinition {
     fields: [DefaultFieldSchemaDefinition!]!
 }
 
+"""
+Schema definition for a field in the event data.
+"""
 interface FieldSchemaDefinition {
+    """
+    Name of the field.
+    """
     name: String!
+    """
+    Type of the field.
+    """
     type: AllowedDataType!
+    """
+    Description of the field.
+    """
     description: String
+    """
+    Whether the field is required.
+    """
     required: Boolean!
+    """
+    Allowed values for the field. Set to null if any value is allowed.
+    """
     allowedValues: [String!]
 }
 
+"""
+Default implementation of the FieldSchemaDefinition interface.
+"""
 type DefaultFieldSchemaDefinition implements FieldSchemaDefinition {
     name: String!
     type: AllowedDataType!
@@ -118,6 +242,9 @@ type DefaultFieldSchemaDefinition implements FieldSchemaDefinition {
     allowedValues: [String!]
 }
 
+"""
+Input for creating an event type.
+"""
 input CreateEventTypeInput {
     identifier: String!
     description: String
@@ -126,6 +253,9 @@ input CreateEventTypeInput {
     messageTemplate: String!
 }
 
+"""
+Input for updating an event type.
+"""
 input UpdateEventTypeInput {
     description: String
     defaultVisibility: EventVisibility!
@@ -133,10 +263,16 @@ input UpdateEventTypeInput {
     messageTemplate: String!
 }
 
+"""
+Input for creating and updating a schema definition.
+"""
 input SchemaDefinitionInput {
     fields: [FieldSchemaDefinitionInput!]!
 }
 
+"""
+Input for creating and updating a field schema definition.
+"""
 input FieldSchemaDefinitionInput {
     name: String!
     type: AllowedDataType!

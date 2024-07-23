@@ -1,7 +1,5 @@
 package de.unistuttgart.iste.meitrex.rulesengine.util;
 
-import java.util.*;
-
 /**
  * Interface for persisting events.
  *
@@ -28,14 +26,6 @@ public interface EventPersistence<E, R> {
     boolean exists(R eventRequest);
 
     /**
-     * Checks if an event exists.
-     *
-     * @param id the id of the event to check
-     * @return true if the event exists, false otherwise
-     */
-    boolean exists(UUID id);
-
-    /**
      * Gets an event from a request.
      *
      * @param event the event request
@@ -44,12 +34,4 @@ public interface EventPersistence<E, R> {
      */
     E getEvent(R event);
 
-    /**
-     * Gets an event from an id.
-     *
-     * @param id the id of the event
-     * @return the event
-     * @apiNote This method may only be called if {@link #exists(Object)} returns true.
-     */
-    E getEvent(UUID id);
 }

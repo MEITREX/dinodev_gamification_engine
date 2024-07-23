@@ -63,7 +63,6 @@ public class GamificationEngine {
     private void processEvent(Event event) {
         log.info("Received event: {}", formatEvent(event));
 
-        // TODO check validity of event
         ruleRegistry.getRulesForEventType(event.getEventType().getIdentifier())
                 .stream()
                 .filter(rule -> rule.checkCondition(event))

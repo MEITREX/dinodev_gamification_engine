@@ -1,12 +1,13 @@
 package de.unistuttgart.iste.meitrex.rulesengine;
 
 import de.unistuttgart.iste.meitrex.generated.dto.*;
-import lombok.NoArgsConstructor;
 
 import java.util.*;
 
-@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class DefaultEventTypes {
+
+    private DefaultEventTypes() {
+    }
 
     public static final DefaultEventType SYSTEM_MESSAGE = DefaultEventType.builder()
             .setIdentifier("SYSTEM_MESSAGE")
@@ -46,7 +47,7 @@ public class DefaultEventTypes {
             .setIdentifier("UNKNOWN")
             .setDescription("An unknown event.")
             .setDefaultVisibility(EventVisibility.INTERNAL)
-            .setEventSchema(DefaultSchemaDefinition.builder().build())
+            .setEventSchema(DefaultSchemaDefinition.builder().setFields(List.of()).build())
             .setMessageTemplate("This is an unknown event.")
             .build();
 }

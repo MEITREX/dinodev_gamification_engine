@@ -1,165 +1,179 @@
-# template-microservice
-This serves as a template for the microservices
+# Gamification Engine
 
-## Package structure
+This repository contains the gamification engine of [DinoDev](https://github.com/MEITREX/dinodev), but it can be used
+for other projects as well.
+See also the [DinoDev Wiki](https://github.com/MEITREX/dinodev/wiki/).
 
-This package structure is based on multiple sources of best practices in Spring Boot, using roughly the "Package by layer" approach.
-- *root*
-  - *config*
-  - *controller*
-  - *dapr*
-  - *dto*
-  - *exception*
-  - *persistence*
-    - *entity*
-    - *repository*
-    - *mapper*
-  - *service*
-  - *util* (optional, if needed)
-  - *validation*
+## Concept
 
-Detailed description of the packages:
+The concept is inspired by the work
+of [Garcia et al.](https://www.sciencedirect.com/science/article/pii/S0164121217301218?casa_token=s-cYhGuPw1AAAAAA:FUTHVyjbcEeDX3PVIBFWNGp3LQdcmTj3rORLPnUW239XbvYrFg82kqyDq2R_rVqA1LVqvL5ZFf4)
+There are three main elements in the gamification engine:
 
-### Root package
+- **Events**: Events represent user behavior that can be tracked and rewarded. For example, a user reviews a pull
+  request or creates a new issue.
+- **Event Types**: Each event has a type. The type defines the event's properties.
+- **Rules**: Rules define actions which are executed when an event occurs and a condition is met. For example, a user
+  reviews a pull request and receives 10 points.
 
-This should be named after the microservice itself. This is the root package for the microservice. It contains the `Application.java` file (or of similar name), which is the entry point for the microservice. Usually, this is the only class in this package.
+This engine is completely generic, there are no game elements implemented. You can define your own event types and
+rules.
 
-### Config package
-This package should contain any classes that are used to configure the application. This includes [Sprint Boot configuration classes](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html) but might also contain anything else related to configuration the microservice.
-The classes that are in this package should not be deleted in the actual microservice as they provide useful functionality.
+## EventPublisher
 
-### Controller package
+This repository contains an event publisher which can be used whenever a pub-sub pattern is needed. It is based
+on [Project Reactor](https://projectreactor.io/).
 
-**Location:src/main/java/de/unistuttgart/iste/meitrex/{service_name}/controller**
+## Example usage
 
-This package contains the GraphQL controllers (and other types of controllers if needed). The GraphQL controllers are annotated with the `@Controller` annotation. Controllers contain no business logic, but only delegate the requests to the service layer. They handle the "technical stuff" of the request.
+The following example assumes a Spring Boot application, but the gamification engine is not bound to Spring Boot.
 
-In some services, there is also a class called SubscriptionController which handles all dapr event subscriptions.
+### Define an event type
 
-More information can be found in
-the [Controller package](src/main/java/de/unistuttgart/iste/meitrex/template/controller/package-info.java).
+Define the event type you need using the builder pattern. The following example defines an event type for gaining XP.
 
-### Dapr package
-
-**Location**:src/main/java/de/unistuttgart/iste/meitrex/{service_name}/dapr
-
-This package should contain all classes that are used to communicate with Dapr, e.g. using pub sub.
-
-### DTO package
-
-**This package will not be located in the src/main/java folder, but in the build/generated folder.**
-
-This package contains the generated DTOs (data transfer objects) from the GraphQL schema. The DTOs are generated when building the project with gradle. 
-
-If not necessary, no other files should be added manually to this package.
-
-#### Why both DTOs and Entities?
-
-The DTOs are used to transfer data between the GraphQL controller and the service layer. The entities are used to persist data in the database. This is done to separate the data transfer from the data persistence. This is a common approach in Spring Boot applications as it can happen that we want to store more data in the database than we want to transfer to the client or vice versa.
-
-### Exception package
-
-**Location**:src/main/java/de/unistuttgart/iste/meitrex/{service_name}/exception
-
-This package is used for exception handling. Note that with GraphQL, the exceptions are not thrown directly, but are wrapped in a `GraphQLException`, which is different that from the usual Spring Boot approach.
-
-More information can be found in
-the [Exception package](src/main/java/de/unistuttgart/iste/meitrex/template/exception/package-info.java).
-
-### Persistence package
-
-**Location**:src/main/java/de/unistuttgart/iste/meitrex/{service_name}/persistence
-
-This package contains all classes that are used to persist data in the database. This includes the entities, the mapping
-logic between entities and DTOs, as well as the repositories.
-
-This package handles the calls to the database and defines the database entities. It is structured into three sub-packages:
-
-#### 1. entity
-This package contains the database entities.
-
-#### 2. repository
-This package contains the interfaces to the database, also known as Data Access Objects (DAOs), used to perform various database operations. Note that these interfaces may sometimes be empty, especially when the default methods provided by the Spring Framework are sufficient for the required operations.
-
-#### 3. mapper
-The 'mapper' package is responsible for the mapping logic between the database entities and the data types defined in the GraphQL schema. Specifically, it maps the database entity classes to the corresponding classes generated from the GraphQL schema.
-
-This structure helps organize the database-related components of the project, making it easier to manage and maintain.
-
-More information can be found in
-the [Entity package](src/main/java/de/unistuttgart/iste/meitrex/template/persistence/entity/package-info.java) and
-the [Repository package](src/main/java/de/unistuttgart/iste/meitrex/template/persistence/repository/package-info.java).
-
-### Service package
-
-**Location**:src/main/java/de/unistuttgart/iste/meitrex/{service_name}/service
-
-This package contains all classes that are used to handle the business logic of the microservice. Services are annotated with the `@Service` annotation. Services contain only business logic and delegate the data access to the persistence layer (repositories). 
-
-More information can be found in
-the [Service package](src/main/java/de/unistuttgart/iste/meitrex/template/service/package-info.java).
-
-### Validation package
-
-**Location**:src/main/java/de/unistuttgart/iste/meitrex/{service_name}/validation
-
-This package should contain the *class-level* validation logic, i.e. the validation logic that is not directly related to a specific field, e.g. validation if an end date is after a start date.
-
-Field-level validation logic should not be placed in this package, but in the graphql schema, via directives. 
-If these directives are not sufficient, the validation logic can also be placed in this package.
-
-## Getting Started
-
-### Todos
-
-Follow the guide in the wiki: https://github.com/MEITREX/wiki/blob/main/dev-manuals/backend/new-service.md
-
-Addtionally, after cloning the repository, you need to do the following steps:
-- [ ] Setup the gradle files correctly. This means
-  - [ ] Change the project name in the `settings.gradle` file
-  - [ ] Change the package name in the `build.gradle` file (there is a TODO comment)
-  - [ ] Change the sonar project key in the `build.gradle` file (should be MEITREX_repository_name)
-  - [ ] Add/Remove dependencies in the `build.gradle` file
-- [ ] Rename the package in the `src/main/java` folder to  a more suitable name (should be the same as the package name in the `build.gradle` file)
-- [ ] Remove the package-info.java files in the `src/main/java` folder (or update with the microservice specific information)
-- [ ] Update the application.properties file in the `src/main/resources` folder (check the TODOS in the file)
-- [ ] Change the ports and name of the database in the docker-compose.yml (see wiki on how to)
-- [ ] Define the GraphQL schema in the `src/main/resources/schema.graphqls` file
-<!-- TODO there probably more TODOs -->
-
-
-After creating a new service you need to do the following:
-- [ ] Add the repository to sonarcloud, follow the instructions for extra configuration, unselect automatic analysis and choose github actions, only the first step needs to be completed
-- [ ] Add SONAR_TOKEN to the service repository secrets on Github (this requires you to have admin permissions on sonarcloud) 
-
-### Pull new changes from this template
-
-If this template changes and you want to pull the changes to the actual microservice, you can run the following commands:
-```bash
-git remote add template https://github.com/MEITREX/template_microservice # only necessary once
-git fetch --all
-git checkout [branch] # replace [branch] with the branch name you want the changes to be merged into (preferably not main)
-git merge template/main --allow-unrelated-histories
-# you will probably need to commit afterwars
+```java
+public static final EventType XP_GAIN = DefaultEventType.builder()
+        .setIdentifier("XP_GAIN")
+        .setDescription("A user gained XP.")
+        .setDefaultVisibility(EventVisibility.PRIVATE)
+        .setEventSchema(DefaultSchemaDefinition.builder().setFields(
+                        List.of(
+                                DefaultFieldSchemaDefinition.builder()
+                                        .setName("xp")
+                                        .setType(AllowedDataType.INTEGER)
+                                        .setDescription("The amount of XP gained.")
+                                        .setRequired(true)
+                                        .build()))
+                .build())
+        .setMessageTemplate("gained ${xp} XP!")
+        .build();
 ```
 
-### Guides
-The following guides illustrate how to use some features concretely:
+### Register the event types
 
-* [Building a GraphQL service](https://spring.io/guides/gs/graphql-server/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Validation with GraphQL directives](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/README.md)
-* [Error handling](https://www.baeldung.com/spring-graphql-error-handling)
+Register the event types in the `EventTypeRegistry`.
 
-### Reference Documentation
-For further reference, please consider the following sections:
+```java
+@Bean
+public EventTypeRegistry eventTypeRegistry() {
+    EventTypeRegistry eventTypeRegistry = new EventTypeRegistry();
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.0.6/gradle-plugin/reference/html/)
-* [Spring Configuration Processor](https://docs.spring.io/spring-boot/docs/3.0.6/reference/htmlsingle/#appendix.configuration-metadata.annotation-processor)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/3.0.6/reference/htmlsingle/#using.devtools)
-* [Spring for GraphQL](https://docs.spring.io/spring-boot/docs/3.0.6/reference/html/web.html#web.graphql)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/3.0.6/reference/htmlsingle/#data.sql.jpa-and-spring-data)
-* [Validation](https://docs.spring.io/spring-boot/docs/3.0.6/reference/htmlsingle/#io.validation)
-* [Generating Sonarqube Token](https://docs.sonarqube.org/latest/user-guide/user-account/generating-and-using-tokens/)
-* [Adding secrets on Github](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+    eventTypeRegistry.register(XP_GAIN);
+    eventTypeRegistry.register(ISSUE_CREATED);
+    // add any other event types here
+
+    return eventTypeRegistry;
+}
+```
+
+### Implement a rule
+
+Implement a rule that rewards the user with XP.
+
+```java
+public class XpGainRule implements Rule {
+
+    @Override
+    public List<String> getTriggerEventTypeIdentifiers() {
+        return List.of(ISSUE_CREATED.getIdentifier());
+    }
+
+    @Override
+    public boolean checkCondition(Event triggerEvent) {
+        return true; // all events of type ISSUE_CREATED trigger this rule
+    }
+
+    @Override
+    public synchronized Optional<CreateEventInput> executeAction(Event triggerEvent) {
+        // add your logic here
+
+        return Optional.of(getXpGainEvent(triggerEvent, xpToAdd));
+    }
+
+    private CreateEventInput getXpGainEvent(Event triggerEvent, int xpToAdd) {
+        return CreateEventInput.builder()
+                .setEventTypeIdentifier(XP_GAIN.getIdentifier())
+                .setProjectId(triggerEvent.getProjectId())
+                .setUserId(triggerEvent.getUserId())
+                .setEventData(List.of(
+                        new TemplateFieldInput("xp", AllowedDataType.INTEGER, Integer.toString(xpToAdd))))
+                .setMessage(getXpMessage(triggerEvent, xpToAdd))
+                .setParentId(triggerEvent.getId())
+                .build();
+    }
+}
+```
+
+### Register the rules
+
+Register the rules in the `RuleRegistry`.
+The following code registers all bean of type `Rule` in the `RuleRegistry`.
+
+```java
+@Bean
+RuleRegistry ruleRegistry(ApplicationContext applicationContext) {
+    RuleRegistry ruleRegistry = new RuleRegistry();
+
+    Map<String, Rule> ruleBeans = applicationContext.getBeansOfType(Rule.class);
+
+    // Register each Rule bean
+    for (Rule rule : ruleBeans.values()) {
+        ruleRegistry.register(rule);
+    }
+
+    return ruleRegistry;
+}
+```
+
+### Provide an event publisher
+
+```java
+@Bean
+public DefaultEventPublisher eventPublisher(EventPersistenceService eventService) {
+    return new DefaultEventPublisher(eventService);
+}
+```
+
+### Setup the gamification engine
+
+```java
+@Bean
+public GamificationEngine gamificationEngine(
+        EventPublisher<Event, CreateEventInput> eventPublisher,
+        EventTypeRegistry eventTypeRegistry,
+        RuleRegistry ruleRegistry
+) {
+    return new GamificationEngine(eventPublisher, ruleRegistry, eventTypeRegistry);
+}
+```
+
+### Publish an event
+
+```java
+public class IssueService {
+
+    private final EventPublisher<Event, CreateEventInput> eventPublisher;
+
+    public IssueService(EventPublisher<Event, CreateEventInput> eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
+
+    public void createIssue(String projectId, String userId) {
+        // issue creation logic
+        
+        Event event = Event.builder()
+                .setEventTypeIdentifier(ISSUE_CREATED.getIdentifier())
+                .setProjectId(projectId)
+                .setUserId(userId)
+                // ....
+                .build();
+
+        eventPublisher.publish(event);
+        
+        // the gamification engine will execute the rules
+    }
+}
+```
+
+```

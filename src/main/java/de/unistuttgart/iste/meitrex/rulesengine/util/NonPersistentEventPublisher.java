@@ -1,7 +1,5 @@
 package de.unistuttgart.iste.meitrex.rulesengine.util;
 
-import java.util.*;
-
 /**
  * A non-persistent event publisher that does not persist events, which uses the same type for the event and the event
  * request. The {@link #publishEvent(Object)} method will always transmit the event to the subscribers.
@@ -27,18 +25,8 @@ public class NonPersistentEventPublisher<E> extends EventPublisher<E, E> {
         }
 
         @Override
-        public boolean exists(UUID id) {
-            return false;
-        }
-
-        @Override
         public E getEvent(E event) {
             return event;
-        }
-
-        @Override
-        public E getEvent(UUID id) {
-            return null;
         }
     }
 }
